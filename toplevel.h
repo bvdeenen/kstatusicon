@@ -1,36 +1,27 @@
-/*
- *   This file is part of the KTeaTime application.
- *
- *   Copyright (C) 1998-1999  Matthias Hoelzer-Kluepfel <hoelzer@kde.org>
- *   Copyright (C) 2002-2003  Martin Willers <willers@xm-arts.de>
- *   Copyright (c) 2007-2009  Stefan Böhmann <kde@hilefoks.org>
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- */
 #ifndef TOPLEVEL_H
 #define TOPLEVEL_H
-
-#include "tea.h"
 
 #include <QIcon>
 #include <QPixmap>
 #include <KSystemTrayIcon>
+#include <QtCore/QVariant>
+#include <QtGui/QAction>
+#include <QtGui/QApplication>
+#include <QtGui/QButtonGroup>
+#include <QtGui/QCheckBox>
+#include <QtGui/QGridLayout>
+#include <QtGui/QGroupBox>
+#include <QtGui/QHBoxLayout>
+#include <QtGui/QHeaderView>
+#include <QtGui/QLabel>
+#include <QtGui/QSpacerItem>
+#include <QtGui/QToolButton>
+#include <QtGui/QTreeView>
+#include <QtGui/QVBoxLayout>
+#include <QtGui/QWidget>
 
 
 class QAction;
-class QActionGroup;
 class KHelpMenu;
 class KPassivePopup;
 class KAboutData;
@@ -49,36 +40,25 @@ class TopLevel : public KSystemTrayIcon
     public:
         explicit TopLevel(const KAboutData *aboutData, const QString &icon = "kteatime", QWidget *parent = 0);
         ~TopLevel();
-        void setTeaList(const QList<Tea> &tealist);
-        void runTea(const Tea &tea);
 
     private slots:
-        void runTea(QAction *a);
-        void showSettingsDialog();
-        void showTimeEditDialog();
         void teaTimeEvent();
-        void cancelTea();
         void showPopup(QSystemTrayIcon::ActivationReason reason);
 
     private:
         void checkState();
-        void loadConfig();
         void loadTeaMenuItems();
         QPoint calculatePopupPoint();
         void repaintTrayIcon();
 
     private:
-        QList<Tea> m_tealist;
-        QAction *m_stopAct, *m_confAct, *m_anonAct, *m_exitAct;
-        QActionGroup *m_teaActionGroup;
-
+        QAction  *m_exitAct;
         KHelpMenu *m_helpMenu;
         QTimer *m_timer;
         KPassivePopup *m_popup;
 
         int m_runningTeaTime;
         int m_nextNotificationTime;
-        Tea m_runningTea;
 
         /** should we use notifications defined by KNotification */
         bool m_usenotification;

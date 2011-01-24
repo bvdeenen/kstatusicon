@@ -151,7 +151,7 @@ void SettingsDialog::accept()
     group.writeEntry( "UseVisualize",      ui->visualizeCheckBox->checkState() == Qt::Checked );
 
     config->sync();
-    m_toplevel->setTeaList( m_model->getTeaList() );
+    //m_toplevel->setTeaList( m_model->getTeaList() );
 }
 
 

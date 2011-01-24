@@ -20,9 +20,9 @@
  *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 #include "toplevel.h"
-#include "timeedit.h"
-#include "settings.h"
-#include "tea.h"
+//#include "timeedit.h"
+//#include "settings.h"
+//#include "tea.h"
 
 #include <QString>
 #include <QAction>
@@ -49,53 +49,12 @@ TopLevel::TopLevel(const KAboutData *aboutData, const QString &icon, QWidget *pa
 {
     QApplication::setQuitOnLastWindowClosed( false );
 
-    KSharedConfigPtr config = KSharedConfig::openConfig();
-    KConfigGroup tealistGroup( config, "Tealist" );
-
-    if( tealistGroup.exists() ) {
-        QString key, time;
-        for(unsigned index=0; tealistGroup.hasKey(time.sprintf("Tea%d Time", index)) && tealistGroup.hasKey(key.sprintf("Tea%d Name", index)); ++index) {
-            if( int temp = ( tealistGroup.readEntry( time, QString() ) ).toUInt() ) {
-                m_tealist.append( Tea( tealistGroup.readEntry( key, i18n( "Unknown Tea" ) ), temp ) );
-            }
-        }
-    }
-
-    // If the list of teas is empty insert a set of default teas.
-    if( m_tealist.isEmpty() ) {
-        m_tealist.append( Tea(i18n( "Black Tea" ), 180 ) );
-        m_tealist.append( Tea(i18n( "Earl Grey" ), 300 ) );
-        m_tealist.append( Tea(i18n( "Fruit Tea" ), 480 ) );
-    }
-
-
-    m_teaActionGroup=new QActionGroup( this );
-
-    // build the context menu
-    m_stopAct = new QAction( "stop", this );
-    m_stopAct->setIcon( KIcon( "edit-delete" ) );
-    m_stopAct->setText( i18n( "&Stop" ) );
-    m_stopAct->setEnabled( false );
-
-    m_confAct = new QAction( "configure", this );
-    m_confAct->setIcon(KIcon( "configure" ) );
-    m_confAct->setText(i18n( "&Configure..." ) );
-
-    m_anonAct = new QAction( "anonymous", this );
-    m_anonAct->setText(i18n( "&Anonymous..." ) );
-
     m_exitAct = actionCollection()->action(KStandardAction::name( KStandardAction::Quit ) );
     m_exitAct->setShortcut( 0 ); // Not sure if it is correct.
 
     m_helpMenu = new KHelpMenu( 0, aboutData, false );
 
 
-    loadTeaMenuItems();
-    contextMenu()->addSeparator();
-    contextMenu()->addAction( m_stopAct );
-    contextMenu()->addAction( m_anonAct );
-    contextMenu()->addSeparator();
-    contextMenu()->addAction( m_confAct );
     contextMenu()->addMenu( m_helpMenu->menu() );
     contextMenu()->addAction( m_exitAct );
 
@@ -106,14 +65,10 @@ TopLevel::TopLevel(const KAboutData *aboutData, const QString &icon, QWidget *pa
     m_timer = new QTimer( this );
 
     connect( m_timer, SIGNAL( timeout() ), this, SLOT( teaTimeEvent() ) );
-    connect( m_stopAct, SIGNAL( triggered(bool) ), this, SLOT( cancelTea() ) );
-    connect( m_confAct, SIGNAL( triggered(bool) ), this, SLOT( showSettingsDialog() ) );
-    connect( m_anonAct, SIGNAL( triggered(bool) ), this, SLOT( showTimeEditDialog() ) );
-    connect( contextMenu(), SIGNAL( triggered(QAction*) ), this, SLOT( runTea(QAction*) ) );
     connect( this, SIGNAL( activated(QSystemTrayIcon::ActivationReason) ),
              this, SLOT( showPopup(QSystemTrayIcon::ActivationReason) ) );
 
-    loadConfig();
+    m_timer->start( 1000 );
     checkState();
 }
 
@@ -123,16 +78,11 @@ TopLevel::~TopLevel()
     delete m_helpMenu;
     delete m_timer;
     delete m_popup;
-    delete m_teaActionGroup;
 }
 
 
 void TopLevel::checkState() {
     const bool state = m_runningTeaTime != 0;
-
-    m_teaActionGroup->setEnabled( !state );
-    m_stopAct->setEnabled( state );
-    m_anonAct->setEnabled( !state );
 
     if( !state ) {
         m_popup->setView( i18n( "The Tea Cooker" ), i18n( "No steeping tea." ), m_pix );
@@ -141,105 +91,11 @@ void TopLevel::checkState() {
 }
 
 
-void TopLevel::setTeaList(const QList<Tea> &tealist) {
-    m_tealist=tealist;
-
-    // Save list...
-    KSharedConfigPtr config = KSharedConfig::openConfig();
-    KConfigGroup tealistGroup( config, "Tealist" );
-
-    for(int i=0; i<m_tealist.size(); ++i) {
-        tealistGroup.writeEntry(QString( "Tea%1 Time" ).arg( i ), m_tealist.at( i ).time() );
-        tealistGroup.writeEntry(QString( "Tea%1 Name" ).arg( i ), m_tealist.at( i ).name() );
-    }
-    tealistGroup.config()->sync();
-
-
-    foreach(QAction* a, m_teaActionGroup->actions() ) {
-        m_teaActionGroup->removeAction( a );
-    }
-
-    contextMenu()->clear();
-
-    ( static_cast<KMenu*>( contextMenu() ) )->addTitle( qApp->windowIcon(), KGlobal::caption() );
-
-    loadTeaMenuItems();
-    contextMenu()->addSeparator();
-    contextMenu()->addAction( m_stopAct );
-    contextMenu()->addAction( m_anonAct );
-    contextMenu()->addSeparator();
-    contextMenu()->addAction( m_confAct );
-    contextMenu()->addMenu(m_helpMenu->menu() );
-    contextMenu()->addAction( m_exitAct );
-
-    loadConfig();
-}
-
-
-void TopLevel::loadTeaMenuItems() {
-    int i=0;
-
-    foreach(const Tea &t, m_tealist) {
-        QAction *a = contextMenu()->addAction(
-                   i18nc( "%1 - name of the tea, %2 - the predefined time for "
-                          "the tea", "%1 (%2)", t.name(), t.timeToString() )
-                     );
-
-        a->setData( ++i );
-        m_teaActionGroup->addAction( a );
-    }
-}
-
-
-void TopLevel::showSettingsDialog()
-{
-    SettingsDialog( this, m_tealist ).exec();
-}
-
-
-void TopLevel::showTimeEditDialog()
-{
-    TimeEditDialog( this ).exec();
-}
-
-
-void TopLevel::runTea(QAction *a)
-{
-    int index = a->data().toInt();
-    if( index <= 0 ) {
-        return;
-    }
-
-    --index;
-
-    if( index > m_tealist.size() ) {
-        return;
-    }
-
-    runTea( m_tealist.at( index ) );
-}
-
-
-void TopLevel::runTea(const Tea &tea)
-{
-    m_runningTea = tea;
-    m_runningTeaTime = m_runningTea.time();
-
-    checkState();
-    repaintTrayIcon();
-
-    m_timer->start( 1000 );
-}
-
-
 void TopLevel::repaintTrayIcon()
 {
+    static float n=0;
      m_pix = m_icon.pixmap( QSize( 22, 22 ) );
 
-    if( m_runningTeaTime == 0 ) {
-        setIcon( m_icon );
-    }
-    else {
         QPainter p( &m_pix );
         p.setRenderHint( QPainter::Antialiasing );
 
@@ -247,16 +103,11 @@ void TopLevel::repaintTrayIcon()
         QRectF rectangle( 2, geometry().height()-12, 10, 10 );
         p.drawPie( rectangle, 90*16, 360*16 );
 
-        if( m_runningTeaTime > 0 ) {
             p.setBrush( QColor(255, 0, 0, 190) );
-            p.drawPie( rectangle, 90*16, -( 360*16 / m_runningTea.time() * m_runningTeaTime ) );
-        }
-        else if( (m_runningTeaTime * -1) % 2 == 0 ) {
-           p.setBrush( QColor( 255, 0, 0, 190 ) );
-           p.drawPie( rectangle, 90*16, -360*16 );
-        }
+            p.drawPie( rectangle, 90*16, -( 360*16 * n ) );
+            n+=0.1;
+            if ( n>1 ) n=0;
         setIcon( m_pix );
-    }
 }
 
 
@@ -264,87 +115,10 @@ void TopLevel::teaTimeEvent()
 {
     QString title = i18n( "The Tea Cooker" );
 
-    if( m_runningTeaTime == 0 ) {
-        m_timer->stop();
-
-        QString content = i18n( "%1 is now ready!", m_runningTea.name() );
-
-        //NOTICE Timeout is set to ~24 days when no auto hide is request. Ok - nearly the same...
-        if( m_usepopup ) {
-            showMessage( title, content, QSystemTrayIcon::Information, m_autohide ? m_autohidetime*1000 : 2100000000 );
-        }
-
-        if( m_usenotification ) {
-            KNotification::event( "ready", content, m_pix );
-        }
-
-
-        if( m_usereminder && m_remindertime > 0 ) {
-            m_popup->setView( title, content, m_pix );
-            setToolTip( content );
-
-            m_timer->start( 1000 );
-            m_nextNotificationTime -= m_remindertime;
-            --m_runningTeaTime;
-        }
-        checkState();
-    }
-    else if(m_runningTeaTime<0) {
-        QString content = i18n( "%1 is ready since %2!", m_runningTea.name(), Tea::int2time( m_runningTeaTime*-1, true ) );
-        setToolTip( content );
-
-        m_popup->setView( title, content, m_pix );
-
-        if( m_runningTeaTime == m_nextNotificationTime ) {
-            if( m_usepopup ) {
-                showMessage( title, content, QSystemTrayIcon::Information, m_autohide ? m_autohidetime*1000 : 2100000000 );
-            }
-
-            if( m_usenotification ) {
-                KNotification::event( "reminder", content, m_pix );
-            }
-
-            m_nextNotificationTime -= m_remindertime;
-        }
-        --m_runningTeaTime;
-    }
-    else {
-        --m_runningTeaTime;
-        setToolTip( i18nc( "%1 is the time, %2 is the name of the tea", "%1 left for %2.", Tea::int2time( m_runningTeaTime, true ), m_runningTea.name() ) );
-        m_popup->setView( title, i18nc( "%1 is the time, %2 is the name of the tea", "%1 left for %2.", Tea::int2time( m_runningTeaTime, true ), m_runningTea.name() ), m_pix );
-    }
-
-    if( m_usevisualize ) {
         repaintTrayIcon();
-    }
+    m_timer->start( 1000 );
 }
 
-
-void TopLevel::cancelTea()
-{
-    m_timer->stop();
-    m_runningTeaTime = 0;
-    checkState();
-
-    if( m_usevisualize ) {
-        repaintTrayIcon();
-    }
-}
-
-
-void TopLevel::loadConfig()
-{
-    KSharedConfigPtr config = KSharedConfig::openConfig();
-    KConfigGroup generalGroup( config, "General" );
-
-    m_usenotification=generalGroup.readEntry( "UseNotification", true );
-    m_usepopup=generalGroup.readEntry( "UsePopup", true );
-    m_autohide=generalGroup.readEntry( "PopupAutoHide", false );
-    m_autohidetime=generalGroup.readEntry( "PopupAutoHideTime", 30 );
-    m_usereminder=generalGroup.readEntry( "UseReminder", false );
-    m_remindertime=generalGroup.readEntry( "ReminderTime", 60 );
-    m_usevisualize=generalGroup.readEntry( "UseVisualize", true );
-}
 
 
 void TopLevel::showPopup(QSystemTrayIcon::ActivationReason reason)

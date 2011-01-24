@@ -109,7 +109,7 @@ void TimeEditDialog::accept()
     group.writeEntry( "AnonymousTeaDialogXPos", x() );
     group.writeEntry( "AnonymousTeaDialogYPos", y() );
 
-    m_toplevel->runTea( Tea( i18n( "Anonymous Tea" ), time ) );
+    //m_toplevel->runTea( Tea( i18n( "Anonymous Tea" ), time ) );
 }
 
 

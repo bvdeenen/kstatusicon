@@ -50,10 +50,10 @@ int main (int argc, char *argv[])
     KCmdLineArgs::init( argc, argv, &aboutData );
 
     KCmdLineOptions options;
-    options.add( "t" );
-    options.add( "time <seconds>", ki18n( "Start a new tea with this time." ) );
-    options.add( "n");
-    options.add( "name <name>", ki18n( "Use this name for the tea started with %1." ).subs( "--time" ) );
+    //options.add( "t" );
+    //options.add( "time <seconds>", ki18n( "Start a new tea with this time." ) );
+    //options.add( "n");
+    //options.add( "name <name>", ki18n( "Use this name for the tea started with %1." ).subs( "--time" ) );
 
     KCmdLineArgs::addCmdLineOptions( options );
 
@@ -62,6 +62,7 @@ int main (int argc, char *argv[])
 
     TopLevel *toplevel=new TopLevel( &aboutData );
 
+    /*
     if(args->isSet("time")) {
         const int time=args->getOption( "time" ).toInt();
         if( time > 0 ) {
@@ -70,6 +71,7 @@ int main (int argc, char *argv[])
             toplevel->runTea( tea );
         }
     }
+    */
     args->clear();
 
     toplevel->show();
