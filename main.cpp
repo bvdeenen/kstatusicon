@@ -33,28 +33,17 @@
 
 int main (int argc, char *argv[])
 {
-    KAboutData aboutData( "kteatime", 0, ki18n( "KTeaTime" ), "1.2.1",
-                          ki18n( "KDE utility for making a fine cup of tea." ),
+    KAboutData aboutData( "kstatusicon", 0, ki18n( "KStatusIcon" ), "0.1",
+                          ki18n( "KDE utility for scripted access to an icon in the status bar." ),
                           KAboutData::License_GPL,
-                          ki18n( "(c) 1998-1999, Matthias Hoelzer-Kluepfel\n "
-                                 "(c) 2002-2003, Martin Willers\n "
-                                 "(c) 2007-2009, Stefan Böhmann"
-                               )
+                          ki18n( "(c) 2011 Bart van Deenen")
                         );
 
-    aboutData.addAuthor( ki18n( "Matthias Hoelzer-Kluepfel" ), KLocalizedString(), "hoelzer@kde.org");
-    aboutData.addAuthor( ki18n( "Martin Willers" ), KLocalizedString(), "willers@xm-arts.de");
-    aboutData.addAuthor( ki18n( "Stefan Böhmann" ), KLocalizedString(), "kde@hilefoks.org");
-    aboutData.addCredit( ki18n( "Daniel Teske" ), ki18n( "Many patches" ), "teske@bigfoot.com");
+    aboutData.addAuthor( ki18n( "Bart van Deenen" ), KLocalizedString(), "bart.vandeenen@gmail.com");
 
     KCmdLineArgs::init( argc, argv, &aboutData );
 
     KCmdLineOptions options;
-    //options.add( "t" );
-    //options.add( "time <seconds>", ki18n( "Start a new tea with this time." ) );
-    //options.add( "n");
-    //options.add( "name <name>", ki18n( "Use this name for the tea started with %1." ).subs( "--time" ) );
-
     KCmdLineArgs::addCmdLineOptions( options );
 
     KApplication app;
@@ -62,16 +51,6 @@ int main (int argc, char *argv[])
 
     TopLevel *toplevel=new TopLevel( &aboutData );
 
-    /*
-    if(args->isSet("time")) {
-        const int time=args->getOption( "time" ).toInt();
-        if( time > 0 ) {
-            const Tea tea( args->isSet("name") ? args->getOption("name") : i18n( "Anonymous Tea" ), time );
-
-            toplevel->runTea( tea );
-        }
-    }
-    */
     args->clear();
 
     toplevel->show();
