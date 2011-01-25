@@ -51,25 +51,20 @@ TopLevel::TopLevel(const KAboutData *aboutData, const QString &icon, QWidget *pa
              this, SLOT( showPopup(QSystemTrayIcon::ActivationReason) ) );
 
     m_timer->start( 1000 );
-    checkState();
 }
 
+void TopLevel::setIconfile(const QString &f)
+{
+    m_iconfile=f;
+    m_icon =QIcon(loadIcon(f));
+    repaintTrayIcon();
+}
 
 TopLevel::~TopLevel()
 {
     delete m_helpMenu;
     delete m_timer;
     delete m_popup;
-}
-
-
-void TopLevel::checkState() {
-    const bool state = m_runningTeaTime != 0;
-
-    if( !state ) {
-        m_popup->setView( i18n( "The Tea Cooker" ), i18n( "No steeping tea." ), m_pix );
-        setToolTip( i18n( "The Tea Cooker" ) );
-    }
 }
 
 
@@ -105,60 +100,6 @@ void TopLevel::teaTimeEvent()
     m_timer->start( 1000 );
 }
 
-
-
-void TopLevel::showPopup(QSystemTrayIcon::ActivationReason reason)
-{
-    if( reason == QSystemTrayIcon::Context ) {
-        m_popup->setVisible( false );
-    }
-    else if( reason == QSystemTrayIcon::Trigger || reason == QSystemTrayIcon::DoubleClick ) {
-        if( m_popup->isVisible() ) {
-            m_popup->setVisible( false );
-        }
-        else {
-            m_popup->show( calculatePopupPoint() );
-        }
-    }
-}
-
-
-QPoint TopLevel::calculatePopupPoint()
-{
-    QPoint pos = geometry().topLeft();
-
-    int x = pos.x();
-    int y = pos.y();
-    int w = m_popup->minimumSizeHint().width();
-    int h = m_popup->minimumSizeHint().height();
-
-    QRect r = KGlobalSettings::desktopGeometry( QPoint( x+w/2, y+h/2 ) );
-
-    if( x < r.center().x() ) {
-        x += geometry().width();
-    }
-    else {
-        x -= w;
-    }
-
-    if( (y+h) > r.bottom() ) {
-        y = r.bottom() - h;
-    }
-
-    if( (x+w) > r.right() ) {
-        x = r.right() - w;
-    }
-
-    if( y < r.top() ) {
-        y = r.top();
-    }
-
-    if( x < r.left() ) {
-        x = r.left();
-    }
-
-    return QPoint( x,y );
-}
 
 
 // kate: word-wrap off; encoding utf-8; indent-width 4; tab-width 4; line-numbers on; mixed-indent off; remove-trailing-space-save on; replace-tabs-save on; replace-tabs on; space-indent on;

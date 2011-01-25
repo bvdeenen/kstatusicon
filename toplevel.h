@@ -36,23 +36,23 @@ class KAboutData;
 class TopLevel : public KSystemTrayIcon
 {
     Q_OBJECT
-    //Q_CLASSINFO("D-Bus Interface", "com.vandeenensupport.TopLevel")
+    Q_CLASSINFO("D-Bus Interface", "com.vandeenensupport.TopLevel")
+    Q_PROPERTY(QString iconfile READ iconfile WRITE setIconfile)
     public:
         explicit TopLevel(const KAboutData *aboutData, const QString &icon = "kteatime", QWidget *parent = 0);
         ~TopLevel();
+        void setIconfile(const QString&);
+        QString iconfile() { return m_iconfile; };
 
     public Q_SLOTS:
         void teaTimeEvent();
         void reset();
-        void showPopup(QSystemTrayIcon::ActivationReason reason);
 
     private:
-        void checkState();
-        void loadTeaMenuItems();
-        QPoint calculatePopupPoint();
         void repaintTrayIcon();
 
     private:
+        QString m_iconfile;
         QAction  *m_exitAct;
         KHelpMenu *m_helpMenu;
         QTimer *m_timer;
@@ -82,7 +82,7 @@ class TopLevel : public KSystemTrayIcon
         /** use a visual effect in the system tray icon. */
         bool m_usevisualize;
 
-        const QIcon m_icon;
+        QIcon m_icon;
 
         QPixmap m_pix;
 };

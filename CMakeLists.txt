@@ -6,7 +6,7 @@ find_package(KDE4 REQUIRED)
 include (KDE4Defaults)
 include (MacroLibrary)
 
-qt4_generate_dbus_interface("toplevel.h" -A)
+qt4_generate_dbus_interface("toplevel.h" A)
 add_definitions (${QT_DEFINITIONS} ${QT_QTDBUS_DEFINITIONS} ${KDE4_DEFINITIONS})
 include_directories (${KDE4_INCLUDES})
 
