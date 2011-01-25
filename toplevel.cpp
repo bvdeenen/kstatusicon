@@ -17,6 +17,7 @@
 #include <KNotification>
 #include <KAboutData>
 
+static float n=0;
 
 TopLevel::TopLevel(const KAboutData *aboutData, const QString &icon, QWidget *parent)
   : KSystemTrayIcon( loadIcon(icon), parent ),
@@ -74,7 +75,6 @@ void TopLevel::checkState() {
 
 void TopLevel::repaintTrayIcon()
 {
-    static float n=0;
      m_pix = m_icon.pixmap( QSize( 22, 22 ) );
 
         QPainter p( &m_pix );
@@ -94,6 +94,7 @@ void TopLevel::repaintTrayIcon()
 
 void TopLevel::reset()
 {
+    n=0;
 }
 
 void TopLevel::teaTimeEvent()
