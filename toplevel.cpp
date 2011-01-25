@@ -1,4 +1,5 @@
 #include "toplevel.h"
+#include "topleveladaptor.h"
 
 #include <QString>
 #include <QAction>
@@ -24,8 +25,10 @@ TopLevel::TopLevel(const KAboutData *aboutData, const QString &icon, QWidget *pa
     m_icon( loadIcon( icon ) ),
     m_pix( loadIcon( icon ).pixmap( QSize( 22, 22 ) ) )
 {
+    new TopLevelAdaptor(this);
     QApplication::setQuitOnLastWindowClosed( false );
     QDBusConnection::sessionBus().registerObject("/TopLevel", this);
+    QDBusConnection::sessionBus().registerService("com.vandeenensupport.Toplevel");
 
     m_exitAct = actionCollection()->action(KStandardAction::name( KStandardAction::Quit ) );
     m_exitAct->setShortcut( 0 ); // Not sure if it is correct.
