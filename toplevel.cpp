@@ -1,28 +1,4 @@
-/*
- *   This file is part of the KTeaTime application.
- *
- *   Copyright (C) 1998-1999  Matthias Hoelzer-Kluepfel <hoelzer@kde.org>
- *   Copyright (C) 2002-2003  Martin Willers <willers@xm-arts.de>
- *   Copyright (c) 2007-2009  Stefan Böhmann <kde@hilefoks.org>
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- */
 #include "toplevel.h"
-//#include "timeedit.h"
-//#include "settings.h"
-//#include "tea.h"
 
 #include <QString>
 #include <QAction>
@@ -30,6 +6,7 @@
 #include <QPainter>
 #include <QBrush>
 #include <QActionGroup>
+#include <QDBusConnection>
 
 #include <KMenu>
 #include <KActionCollection>
@@ -48,6 +25,7 @@ TopLevel::TopLevel(const KAboutData *aboutData, const QString &icon, QWidget *pa
     m_pix( loadIcon( icon ).pixmap( QSize( 22, 22 ) ) )
 {
     QApplication::setQuitOnLastWindowClosed( false );
+    QDBusConnection::sessionBus().registerObject("/TopLevel", this);
 
     m_exitAct = actionCollection()->action(KStandardAction::name( KStandardAction::Quit ) );
     m_exitAct->setShortcut( 0 ); // Not sure if it is correct.
@@ -110,6 +88,10 @@ void TopLevel::repaintTrayIcon()
         setIcon( m_pix );
 }
 
+
+void TopLevel::reset()
+{
+}
 
 void TopLevel::teaTimeEvent()
 {

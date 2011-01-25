@@ -36,13 +36,14 @@ class KAboutData;
 class TopLevel : public KSystemTrayIcon
 {
     Q_OBJECT
-
+    Q_CLASSINFO("D-Bus Interface", "com.vandeenensupport.TopLevel")
     public:
         explicit TopLevel(const KAboutData *aboutData, const QString &icon = "kteatime", QWidget *parent = 0);
         ~TopLevel();
 
-    private slots:
+    public Q_SLOTS:
         void teaTimeEvent();
+        void reset();
         void showPopup(QSystemTrayIcon::ActivationReason reason);
 
     private:
