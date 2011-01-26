@@ -29,24 +29,21 @@ class KAboutData;
 
 
 /**
- * @short the main class for KTeatime
+ * @short the main class for kstatusicon
  *
- * @author Stefan Böhmann <kde@hilefoks.org>
  */
 class TopLevel : public KSystemTrayIcon
 {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "com.vandeenensupport.TopLevel")
-    Q_PROPERTY(QString iconfile READ iconfile WRITE setIconfile)
+    Q_PROPERTY(QString icon READ icon WRITE setIconFile)
     public:
-        explicit TopLevel(const KAboutData *aboutData, const QString &icon = "kteatime", QWidget *parent = 0);
+        explicit TopLevel(const KAboutData *aboutData, const QString &icon="" , QWidget *parent = 0);
         ~TopLevel();
-        void setIconfile(const QString&);
-        QString iconfile() { return m_iconfile; };
+        void setIconFile(const QString&);
+        QString icon() { return m_iconfile; };
 
     public Q_SLOTS:
-        void teaTimeEvent();
-        void reset();
 
     private:
         void repaintTrayIcon();
@@ -55,35 +52,7 @@ class TopLevel : public KSystemTrayIcon
         QString m_iconfile;
         QAction  *m_exitAct;
         KHelpMenu *m_helpMenu;
-        QTimer *m_timer;
-        KPassivePopup *m_popup;
-
-        int m_runningTeaTime;
-        int m_nextNotificationTime;
-
-        /** should we use notifications defined by KNotification */
-        bool m_usenotification;
-
-        /** should we show a popup for events */
-        bool m_usepopup;
-
-        /** auto hide the popup? */
-        bool m_autohide;
-
-        /** time after the popup should be hide. */
-        int m_autohidetime;
-
-        /** remind us about a ready tea? */
-        bool m_usereminder;
-
-        /** the time bedween remind events */
-        int m_remindertime;
-
-        /** use a visual effect in the system tray icon. */
-        bool m_usevisualize;
-
         QIcon m_icon;
-
         QPixmap m_pix;
 };
 

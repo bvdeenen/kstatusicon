@@ -1,0 +1,5 @@
+# clean all generated stuff
+# rebuild:
+# cmake . && make
+
+rm -rf CMakeCache.txt *moc*  CMakeFiles *adaptor* CMakeTmp *.xml kstatusicon* *.cmake Makefile 

@@ -1,13 +1,7 @@
 /*
- *   KTeaTime - A tea timer.
+ *   kstatusicon
  *
- *   Copyright (C) 1998-1999  Matthias Hoelzer-Kluepfel <hoelzer@kde.org>
- *   Copyright (C) 2002-2003  Martin Willers <willers@xm-arts.de>
- *   Copyright (c) 2007-2009  Stefan Böhmann <kde@hilefoks.org>
- *
- *   With contributions from Daniel Teske <teske@bigfoot.com>, and
- *   Jackson Dunstan <jdunstan@digipen.edu>
- *   (and possibly others, as well)
+ *   Copyright (C) 2011 Bart van Deenen <info@vandeenensupport.com>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,6 +18,12 @@
  *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+/*
+ *  small application to create an icon in the kde status bar, that can be
+ *  (shell) scripted via qdbus. See test-kstatusicon.sh for an example of how
+ *  to do this.
+ *
+ */
 #include "toplevel.h"
 
 #include <KApplication>
@@ -39,7 +39,7 @@ int main (int argc, char *argv[])
                           ki18n( "(c) 2011 Bart van Deenen")
                         );
 
-    aboutData.addAuthor( ki18n( "Bart van Deenen" ), KLocalizedString(), "bart.vandeenen@gmail.com");
+    aboutData.addAuthor( ki18n( "Bart van Deenen" ), KLocalizedString(), "info@vandeenensupport.com");
 
     KCmdLineArgs::init( argc, argv, &aboutData );
 

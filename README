@@ -1,7 +1,5 @@
 this application creates an icon in a KDE4+ systemtask bar
-the icon is changeable via a qdbus command
+the icon is changeable via a qdbus command.
 
-qdbus $(qdbus | grep kstatusicon) /TopLevel  Set \
-"com.vandeenensupport.TopLevel" "iconfile" "/usr/share/zenity/zenity-calendar.png"
+See test-kstatusicon.sh for an example of using the application
 
-changes the visible icon of the kstatusicon instance. 
