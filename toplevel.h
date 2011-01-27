@@ -37,11 +37,14 @@ class TopLevel : public KSystemTrayIcon
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "com.vandeenensupport.TopLevel")
     Q_PROPERTY(QString icon READ icon WRITE setIconFile)
+    Q_PROPERTY(QString name READ name WRITE setName)
     public:
         explicit TopLevel(const KAboutData *aboutData, const QString &icon="" , QWidget *parent = 0);
         ~TopLevel();
         void setIconFile(const QString&);
+        void setName(const QString &n) { m_name = n; }
         QString icon() { return m_iconfile; };
+        QString name() { return m_name; };
 
     public Q_SLOTS:
 
@@ -50,6 +53,7 @@ class TopLevel : public KSystemTrayIcon
 
     private:
         QString m_iconfile;
+        QString m_name;
         QAction  *m_exitAct;
         KHelpMenu *m_helpMenu;
         QIcon m_icon;
