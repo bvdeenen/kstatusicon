@@ -27,10 +27,8 @@ do
 done
 
 if [  "$theid" == "" ] ; then
-	kstatusicon &
+	kstatusicon $myname &
 	theid=org.kde.kstatusicon-$!
-	sleep 1
-	qdbus $theid /TopLevel Set com.vandeenensupport.TopLevel name $myname
 fi	
 
 icon[0]="audio-input-microphone"

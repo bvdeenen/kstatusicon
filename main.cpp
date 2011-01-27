@@ -29,6 +29,7 @@
 #include <KApplication>
 #include <KAboutData>
 #include <KCmdLineArgs>
+#include <QDebug>
 
 
 int main (int argc, char *argv[])
@@ -44,12 +45,19 @@ int main (int argc, char *argv[])
     KCmdLineArgs::init( argc, argv, &aboutData );
 
     KCmdLineOptions options;
+    options.add("+name", ki18n("An optional 'name' argument to identify this instance"));
+
     KCmdLineArgs::addCmdLineOptions( options );
 
     KApplication app;
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
+
     TopLevel *toplevel=new TopLevel( &aboutData );
+
+    if ( args->count() > 0) {
+           toplevel->setInstanceName(args->arg(0));
+    }
 
     args->clear();
 
