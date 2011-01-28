@@ -56,7 +56,7 @@ int main (int argc, char *argv[])
     TopLevel *toplevel=new TopLevel( &aboutData );
 
     if ( args->count() > 0) {
-           toplevel->setInstanceName(args->arg(0));
+           toplevel->setObjectName(args->arg(0));
     }
 
     args->clear();
